@@ -1,0 +1,21 @@
+server:
+  port: 8000
+
+kafka:
+  producer:
+    bootstrap: localhost:9092
+    topic: testAuto
+
+connection:
+  timeout: 60000
+
+logging:
+  level:
+    org:
+      apache:
+        http: DEBUG
+        kafka: ERROR
+      springframework:
+        cloud:
+          sleuth: INFO
+    nodeValue: DEBUG

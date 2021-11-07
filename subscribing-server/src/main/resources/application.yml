@@ -1,0 +1,8 @@
+server:
+  port: 9000
+
+kafka:
+  consumer:
+    bootstrap: localhost:9092
+    group: pangaea
+    topic: testAuto
