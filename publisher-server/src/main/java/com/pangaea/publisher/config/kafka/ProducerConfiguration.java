@@ -23,7 +23,7 @@ public class ProducerConfiguration {
 
     @Bean
     public ProducerFactory<String, MessageRequest> producerFactory() {
-        return new DefaultKafkaProducerFactory<>(producerConfigs(), stringKeySerializer(), messageJsonSerializer());
+        return new DefaultKafkaProducerFactory<String, MessageRequest>(producerConfigs(), stringKeySerializer(), messageJsonSerializer());
     }
 
     @Bean
@@ -41,12 +41,12 @@ public class ProducerConfiguration {
     }
 
     @Bean
-    public Serializer stringKeySerializer() {
+    public Serializer<String> stringKeySerializer() {
         return new StringSerializer();
     }
 
     @Bean
-    public Serializer messageJsonSerializer() {
-        return new JsonSerializer();
+    public <T> Serializer<T> messageJsonSerializer() {
+        return new JsonSerializer<T>();
     }
 }

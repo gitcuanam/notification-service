@@ -11,6 +11,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import java.util.HashMap;
@@ -29,12 +30,14 @@ public class ConsumerConfiguration {
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConcurrency(1);
         factory.setConsumerFactory(consumerFactory());
+        factory.setCommonErrorHandler(new KafkaMessageErrorHandler()); // https://stackoverflow.com/questions/55923893/how-to-catch-deserialization-error-in-kafka-spring
         return factory;
     }
 
     @Bean
     public ConsumerFactory<String, MessageRequest> consumerFactory() {
-        return new DefaultKafkaConsumerFactory<>(consumerProps(), stringKeyDeserializer(), messageJsonValueDeserializer());
+        return new DefaultKafkaConsumerFactory<String, MessageRequest>(consumerProps(), stringKeyDeserializer(), messageJsonValueDeserializer());
+        // https://stackoverflow.com/questions/70252047/this-error-handler-cannot-process-serializationexceptions-directly-please-con
     }
 
 
@@ -47,21 +50,28 @@ public class ConsumerConfiguration {
         props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "100");
         props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "15000");
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
-                StringDeserializer.class.getName());
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-                StringDeserializer.class.getName());
+        // props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+        //         StringDeserializer.class.getName());
+        // props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+        //         StringDeserializer.class.getName());
+        // props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
+        // props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
+        // props.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, JsonDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
+        props.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, StringDeserializer.class);
+        props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, JsonDeserializer.class.getName());
         return props;
     }
 
     @Bean
-    public Deserializer stringKeyDeserializer() {
+    public Deserializer<String> stringKeyDeserializer() {
         return new StringDeserializer();
     }
 
     @Bean
-    public Deserializer messageJsonValueDeserializer() {
-        return new JsonDeserializer(MessageRequest.class);
+    public Deserializer<MessageRequest> messageJsonValueDeserializer() {
+        return new JsonDeserializer<MessageRequest>(MessageRequest.class);
     }
 }
 

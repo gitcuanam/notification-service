@@ -3,8 +3,8 @@ server:
 
 kafka:
   producer:
-    bootstrap: localhost:9092
-    topic: testAuto
+    bootstrap: localhost:29092
+    topic: test-topic
 
 connection:
   timeout: 60000

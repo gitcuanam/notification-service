@@ -34,7 +34,7 @@ public class PublisherService {
     @Autowired
     private Util util;
 
-    public ResponseEntity publish(Map<String, Object> payload, String topic) {
+    public ResponseEntity<String> publish(Map<String, Object> payload, String topic) {
         MessageRequest messageRequest = new MessageRequest();
         messageRequest.setTopic(topic);
         messageRequest.setData(payload);
@@ -53,7 +53,7 @@ public class PublisherService {
 
     public ResponseEntity<SubscriptionResponse> subscribe(SubscriptionRequest subscriptionRequest, String topic) {
 
-        HashMap<String, String> additionalHeaderParams = new HashMap() {{
+        HashMap<String, String> additionalHeaderParams = new HashMap<String, String>() {{
             put("Content-Type", "application/json");
         }};
 

@@ -25,7 +25,7 @@ public class ExceptionController {
 
         return new ResponseEntity<>(
                 ExceptionResponse.builder()
-                        .responseMessage(!StringUtils.isEmpty(ex.getMessage()) ? ex.getMessage() : "Unknown error occurred")
+                        .responseMessage(StringUtils.hasLength(ex.getMessage()) ? ex.getMessage() : "Unknown error occurred")
                         .errors(new ArrayList<>())
                         .build(), HttpStatus.BAD_REQUEST);
 
