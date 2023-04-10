@@ -65,8 +65,9 @@ public class SubscriberService {
 
         // https://stackoverflow.com/questions/59943786/kafka-what-are-the-better-alternatives-than-poll-to-listen-to-a-topic-in-jav
         ConsumerRecords<Long, Object> records = consumer.poll(Duration.ofMillis(100));
-        for (ConsumerRecord<Long, Object> record : records)
+        for (ConsumerRecord<Long, Object> record : records) {
             System.out.printf("offset = %d, key = %s, value = %s%n", record.offset(), record.key(), record.value());
+        }
         consumer.commitAsync();
         consumer.close();
     }

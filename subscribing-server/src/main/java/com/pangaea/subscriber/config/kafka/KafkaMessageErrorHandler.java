@@ -24,6 +24,7 @@ class KafkaMessageErrorHandler implements CommonErrorHandler {
 
   private void manageException(Exception ex, Consumer<?, ?> consumer) {
       log.error("Error polling message: " + ex.getMessage());
+      ex.printStackTrace();
       if (ex instanceof RecordDeserializationException) {
           RecordDeserializationException rde = (RecordDeserializationException) ex;
           consumer.seek(rde.topicPartition(), rde.offset() + 1L);

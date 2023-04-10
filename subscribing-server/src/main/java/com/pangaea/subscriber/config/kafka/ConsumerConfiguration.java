@@ -55,23 +55,24 @@ public class ConsumerConfiguration {
         // props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
         //         StringDeserializer.class.getName());
         // props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
-        // props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
-        // props.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, JsonDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
         props.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, StringDeserializer.class);
         props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, JsonDeserializer.class.getName());
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "com.pangaea.subscriber.config.kafka.CustomDeserializer");        
         return props;
     }
 
     @Bean
     public Deserializer<String> stringKeyDeserializer() {
-        return new StringDeserializer();
+        StringDeserializer d = new StringDeserializer();
+        return d;
     }
 
     @Bean
     public Deserializer<MessageRequest> messageJsonValueDeserializer() {
-        return new JsonDeserializer<MessageRequest>(MessageRequest.class);
+        JsonDeserializer d = new JsonDeserializer<MessageRequest>(MessageRequest.class);
+        d.addTrustedPackages("*");
+        return d;
     }
 }
 
