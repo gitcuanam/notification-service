@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
+
+import java.time.Duration;
 import java.util.Collections;
 
 @Slf4j
@@ -27,7 +29,7 @@ public class SubscriberService {
     @Autowired
     private ConsumerConfiguration consumerConfiguration;
 
-    @KafkaListener(topics = "testAuto")
+    @KafkaListener(topics = "test-topic", groupId = "test-group")
     public void onReceiving(MessageRequest messageRequest, @Header(KafkaHeaders.OFFSET) Integer offset,
                             @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partition,
                             @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
@@ -61,9 +63,11 @@ public class SubscriberService {
     public void prepareConsumer(String topic) throws InterruptedException {
         final Consumer<Long, Object> consumer = createConsumerAndSubscription(topic);
 
-        ConsumerRecords<Long, Object> records = consumer.poll(100);
-        for (ConsumerRecord<Long, Object> record : records)
+        // https://stackoverflow.com/questions/59943786/kafka-what-are-the-better-alternatives-than-poll-to-listen-to-a-topic-in-jav
+        ConsumerRecords<Long, Object> records = consumer.poll(Duration.ofMillis(100));
+        for (ConsumerRecord<Long, Object> record : records) {
             System.out.printf("offset = %d, key = %s, value = %s%n", record.offset(), record.key(), record.value());
+        }
         consumer.commitAsync();
         consumer.close();
     }

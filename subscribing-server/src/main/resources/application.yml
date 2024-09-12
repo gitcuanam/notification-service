@@ -3,6 +3,13 @@ server:
 
 kafka:
   consumer:
-    bootstrap: localhost:9092
-    group: pangaea
-    topic: testAuto
+    bootstrap: localhost:29092
+    group: test-group
+    topic: test-topic
+    properties:
+      partition:
+        assignment:
+          strategy: org.apache.kafka.clients.consumer.RoundRobinAssignor
+# spring.kafka.consumer.properties.partition.assignment.strategy=\
+# org.apache.kafka.clients.consumer.RoundRobinAssignor.
+# https://docs.spring.io/spring-kafka/reference/html/
